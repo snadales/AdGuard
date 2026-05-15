@@ -1,3 +1,24 @@
+# ==============================================================================
+# STACK: AdGuard Home - Red Local snadales
+# DISPOSITIVO: Intel NUC (Ubuntu 26.04 LTS)
+# 
+# DESCRIPCIÓN:
+#   Servidor DNS principal con bloqueo de publicidad y rastreadores.
+#   Configurado en 'network_mode: host' para baja latencia y visibilidad de IPs.
+#
+# ESTRUCTURA DE CARPETAS (Persistencia):
+#   - /opt/adguardhome/work: Almacena datos de filtros, estadísticas y base de datos.
+#   - /opt/adguardhome/conf: Contiene AdGuardHome.yaml (configuración central).
+#
+# OPTIMIZACIONES APLICADAS:
+#   - SYS_NICE: Prioridad de proceso alta en el Kernel para evitar lag en DNS.
+#   - GitOps: Sincronizado vía Webhook con Portainer para despliegue continuo.
+#   - Resources: Reserva de 128MB RAM para garantizar estabilidad bajo carga.
+#
+# NOTA: Cambios internos (Caché, Goroutines) deben editarse directamente en 
+# /home/snadales/docker/adguard/conf/AdGuardHome.yaml con privilegios de sudo.
+# ==============================================================================
+
 version: "3.8"
 
 services:
