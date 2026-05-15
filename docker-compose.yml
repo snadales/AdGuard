@@ -1,22 +1,26 @@
 # ==============================================================================
-# STACK: AdGuard Home - Red Local snadales
-# DISPOSITIVO: Intel NUC (Ubuntu 26.04 LTS)
-# 
+# PROYECTO: Infraestructura de Red Doméstica
+# SERVICIO: AdGuard Home (DNS & AdBlocker)
+# ==============================================================================
+# DETALLES TÉCNICOS:
+#   - Autor: Sebastian Nadales
+#   - Versión del Stack: 1.2.0
+#   - Fecha Actualización: 2026-05-15
+#   - Host: Intel NUC (Ubuntu 26.04 LTS)
+#   - IP Local: 192.168.10.22
+#
 # DESCRIPCIÓN:
-#   Servidor DNS principal con bloqueo de publicidad y rastreadores.
-#   Configurado en 'network_mode: host' para baja latencia y visibilidad de IPs.
+#   Implementación de AdGuard Home mediante Docker. Proporciona resolución 
+#   DNS de baja latencia y filtrado de contenido a nivel de red.
 #
-# ESTRUCTURA DE CARPETAS (Persistencia):
-#   - /opt/adguardhome/work: Almacena datos de filtros, estadísticas y base de datos.
-#   - /opt/adguardhome/conf: Contiene AdGuardHome.yaml (configuración central).
+# PERSISTENCIA (Mapeo de volúmenes):
+#   - ./work -> /opt/adguardhome/work (Datos, filtros y estadísticas)
+#   - ./conf -> /opt/adguardhome/conf (Configuración AdGuardHome.yaml)
 #
-# OPTIMIZACIONES APLICADAS:
-#   - SYS_NICE: Prioridad de proceso alta en el Kernel para evitar lag en DNS.
-#   - GitOps: Sincronizado vía Webhook con Portainer para despliegue continuo.
-#   - Resources: Reserva de 128MB RAM para garantizar estabilidad bajo carga.
-#
-# NOTA: Cambios internos (Caché, Goroutines) deben editarse directamente en 
-# /home/snadales/docker/adguard/conf/AdGuardHome.yaml con privilegios de sudo.
+# NOTAS DE RENDIMIENTO:
+#   - Network Mode: Host (Elimina el overhead del bridge de Docker).
+#   - Goroutines: Ilimitadas (Configuradas en AdGuardHome.yaml interno).
+#   - Rate Limit: Desactivado para permitir benchmarks y alta concurrencia.
 # ==============================================================================
 
 version: "3.8"
