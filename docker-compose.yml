@@ -6,18 +6,33 @@ services:
     container_name: adguardhome
     restart: unless-stopped
     network_mode: host
+    # 1. Prioridad del proceso (Nice)
+    # Evita que otros contenedores pesados (ej. Plex) le quiten CPU al DNS
+    cap_add:
+      - SYS_NICE
+      - NET_ADMIN
+      - NET_RAW
+    
     volumes:
       - /home/snadales/docker/adguard/work:/opt/adguardhome/work
       - /home/snadales/docker/adguard/conf:/opt/adguardhome/conf
+    
     environment:
       - TZ=America/Santiago
-    # Añadimos límites para asegurar que Docker le asigne prioridad
+    
     deploy:
       resources:
         limits:
+          # 2. El DNS es ligero, 256M es suficiente incluso con caché grande. 
+          # Pero reservamos 128M para que siempre los tenga disponibles (Reservations).
           memory: 512M
+        reservations:
+          memory: 128M
+          
+    # 3. Optimización de Logs (JSON es pesado para escribir a cada rato)
     logging:
       driver: "json-file"
       options:
-        max-size: "10m"
-        max-file: "3"
+        max-size: "5m"
+        max-file: "2"
+        compress: "true" # Comprime los logs viejos para ahorrar SSD
