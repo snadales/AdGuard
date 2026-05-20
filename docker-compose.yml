@@ -11,16 +11,17 @@
 #
 # DESCRIPCIÓN:
 #   Implementación de AdGuard Home mediante Docker. Proporciona resolución 
-#   DNS de baja latencia y filtrado de contenido a nivel de red.
+#   DNS de baja latencia y filtrado de contenido a nivel de red para todo el hogar.
+#
+# ESTRATEGIA DE RED:
+#   - Network Mode: Host. No se conecta a redes virtuales de Docker (bridge).
+#     Se amarra directamente a la IP de la NUC para eliminar el overhead de red,
+#     garantizando respuestas DNS instantáneas y facilitando la detección de las
+#     IPs reales de los clientes en los logs de AdGuard.
 #
 # PERSISTENCIA (Mapeo de volúmenes):
-#   - ./work -> /opt/adguardhome/work (Datos, filtros y estadísticas)
-#   - ./conf -> /opt/adguardhome/conf (Configuración AdGuardHome.yaml)
-#
-# NOTAS DE RENDIMIENTO:
-#   - Network Mode: Host (Elimina el overhead del bridge de Docker).
-#   - Goroutines: Ilimitadas (Configuradas en AdGuardHome.yaml interno).
-#   - Rate Limit: Desactivado para permitir benchmarks y alta concurrencia.
+#   - /home/snadales/docker/adguard/work -> Datos, filtros y estadísticas
+#   - /home/snadales/docker/adguard/conf -> Archivo de configuración AdGuardHome.yaml
 # ==============================================================================
 
 version: "3.8"
@@ -30,9 +31,11 @@ services:
     image: adguard/adguardhome:latest
     container_name: adguardhome
     restart: unless-stopped
+    
+    # Enlace directo a la red física de la NUC
     network_mode: host
-    # 1. Prioridad del proceso (Nice)
-    # Evita que otros contenedores pesados (ej. Plex) le quiten CPU al DNS
+    
+    # Prioridades de ejecución y capacidades del Kernel (Evita degradación por procesos pesados)
     cap_add:
       - SYS_NICE
       - NET_ADMIN
@@ -45,19 +48,19 @@ services:
     environment:
       - TZ=America/Santiago
     
+    # Gestión estricta de recursos para asegurar estabilidad en la NUC
     deploy:
       resources:
         limits:
-          # 2. El DNS es ligero, 256M es suficiente incluso con caché grande. 
-          # Pero reservamos 128M para que siempre los tenga disponibles (Reservations).
-          memory: 512M
+          cpus: '0.50'        # Un DNS no necesita más de medio núcleo para procesar miles de consultas
+          memory: 512M        # Límite amplio por si cargas listas de bloqueo gigantescas
         reservations:
-          memory: 128M
+          memory: 128M        # Garantiza que el sistema siempre le asigne RAM mínima dedicada
           
-    # 3. Optimización de Logs (JSON es pesado para escribir a cada rato)
+    # Optimización de logs locales (Previene escrituras masivas innecesarias en el SSD)
     logging:
       driver: "json-file"
       options:
         max-size: "5m"
         max-file: "2"
-        compress: "true" # Comprime los logs viejos para ahorrar SSD
+        compress: "true"      # Compresión activa para ahorrar espacio en disco
