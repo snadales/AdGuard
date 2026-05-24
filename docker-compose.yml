@@ -29,7 +29,7 @@ version: "3.8"
 services:
   adguardhome:
     image: adguard/adguardhome:latest
-    container_name: adguardhome
+    container_name: adguard
     restart: unless-stopped
     
     # Enlace directo a la red física de la NUC
