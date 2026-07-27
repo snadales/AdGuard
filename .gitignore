@@ -1,0 +1,23 @@
+# Datos operativos, nunca a git — solo config (compose/README/toml/yaml de app).
+config/
+data/
+cache/
+lib/
+Library/
+conf/
+work/
+db_data/
+web_data/
+couchdb_data/
+libros/
+metadata/
+*.db
+*.log
+*.log.*
+.env
+.env.bak-*
+*.bak-*
+
+# Basura de macOS (Finder/SMB)
+.DS_Store
+._*
