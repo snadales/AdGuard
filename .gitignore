@@ -21,3 +21,5 @@ metadata/
 # Basura de macOS (Finder/SMB)
 .DS_Store
 ._*
+
+.env.1password
