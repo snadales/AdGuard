@@ -6,8 +6,8 @@
 #   - Autor: Sebastian Nadales
 #   - Versión del Stack: 1.2.0
 #   - Fecha Actualización: 2026-05-15
-#   - Host: Intel NUC (Ubuntu 26.04 LTS)
-#   - IP Local: 192.168.10.22
+#   - Host: ZBook (Ubuntu Server)
+#   - IP Local: 192.168.10.25
 #
 # DESCRIPCIÓN:
 #   Implementación de AdGuard Home mediante Docker. Proporciona resolución 
@@ -15,7 +15,7 @@
 #
 # ESTRATEGIA DE RED:
 #   - Network Mode: Host. No se conecta a redes virtuales de Docker (bridge).
-#     Se amarra directamente a la IP de la NUC para eliminar el overhead de red,
+#     Se amarra directamente a la IP de ZBook para eliminar el overhead de red,
 #     garantizando respuestas DNS instantáneas y facilitando la detección de las
 #     IPs reales de los clientes en los logs de AdGuard.
 #
@@ -32,7 +32,7 @@ services:
     container_name: adguard
     restart: unless-stopped
     
-    # Enlace directo a la red física de la NUC
+    # Enlace directo a la red física de ZBook
     network_mode: host
     
     # Prioridades de ejecución y capacidades del Kernel (Evita degradación por procesos pesados)
@@ -48,7 +48,7 @@ services:
     environment:
       - TZ=America/Santiago
     
-    # Gestión estricta de recursos para asegurar estabilidad en la NUC
+    # Gestión estricta de recursos para asegurar estabilidad en ZBook
     deploy:
       resources:
         limits:
